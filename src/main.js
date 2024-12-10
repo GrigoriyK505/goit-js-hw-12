@@ -33,7 +33,7 @@ form.addEventListener("submit", async (e) => {
   clearGallery();
   hideLoaderMoreButton();
   showLoader();
-
+  
   try {
     const data = await fetchImages(currentPage, currentQuery);
     totalHits = data.totalHits;

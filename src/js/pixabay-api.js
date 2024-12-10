@@ -9,14 +9,22 @@ const PER_PAGE = 15;
  * @returns {Promise<Object>}
  */
 
-export async function fetchImages(query) {
-  const url = `${BASE_URL}?key=${API_KEY}&q=${encodeURIComponent(query)}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${PER_PAGE}&page=${page}`;
-
+export async function fetchImages(currentPage, query) {
   try {
-    const { data } = await axios.get(url);
+    const { data } = await axios.get(BASE_URL, {
+      params: {
+        key: `${API_KEY}`,
+        q: `${query}`,
+        image_type: 'photo',
+        orientation: 'horizontal',
+        safesearch: true,
+        per_page: `${PER_PAGE}`,
+        page: `${currentPage}`,
+      },
+    });
     return data;
   } catch (error) {
-    console.error("Fetch Images Error:", error.message);
+    console.error('Fetch Images Error:', error.message);
     throw error;
   }
 }
