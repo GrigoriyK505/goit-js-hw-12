@@ -1,3 +1,6 @@
+import iziToast from "izitoast";
+import "izitoast/dist/css/iziToast.min.css";
+
 import { fetchImages } from "./js/pixabay-api.js";
 import {
   clearGallery,
@@ -6,94 +9,86 @@ import {
   hideLoader,
   showError,
   showWarning,
-  showEndOfResultsMessage,
 } from "./js/render-functions.js";
 
 const form = document.getElementById("search-form");
 const input = document.getElementById("search-input");
-const loadMoreBtn = document.createElement("button");
-loadMoreBtn.textContent = "Load more";
-loadMoreBtn.classList.add("load-more");
-loadMoreBtn.style.display = "none";
-document.body.appendChild(loadMoreBtn);
+const loadMoreButton = document.querySelector(".load-more")
 
-let currentQuery = "";
 let currentPage = 1;
+let currentQuery = ""
 let totalHits = 0;
 
 form.addEventListener("submit", async (e) => {
-  e.preventDefault(); // Зупиняє перезавантаження сторінки
-  const query = input.value.trim(); // Отримує значення пошуку
+  e.preventDefault();
+  const query = input.value.trim();
 
   if (!query) {
-    showError("Search field cannot be empty!"); // Показує помилку
+    showError("Search field cannot be empty!");
     return;
   }
 
-  // Скидає стан при новому пошуку
-  if (query !== currentQuery) {
-    currentQuery = query;
-    currentPage = 1;
-    clearGallery();
-    loadMoreBtn.style.display = "none";
-  }
-
-  showLoader(); // Показує індикатор завантаження
+  currentQuery = query;
+  currentPage = 1;
+  clearGallery();
+  hideLoaderMoreButton();
+  showLoader();
 
   try {
-    const data = await fetchImages(currentQuery, currentPage, 15); // Запит на сервер
-
-    hideLoader(); // Приховує індикатор завантаження
+    const data = await fetchImages(currentPage, currentQuery);
+    totalHits = data.totalHits;
+    hideLoader();
 
     if (!data.hits.length) {
-      showWarning("Sorry, there are no images matching your search query."); // Попередження, якщо результатів немає
+      showWarning("Sorry, there are no images matching your search query. Please try again!");
       return;
     }
 
-    totalHits = data.totalHits; // Зберігає загальну кількість результатів
-
-    renderGallery(data.hits); // Рендерить галерею
-
-    if (currentPage * 15 >= totalHits) {
-      showEndOfResultsMessage(); // Повідомлення про кінець результатів
-      loadMoreBtn.style.display = "none";
-    } else {
-      loadMoreBtn.style.display = "block"; // Показує кнопку "Load more"
+    renderGallery(data.hits);
+    if (data.hits.length < totalHits) {
+      showLoaderMoreButton();
     }
+
   } catch (error) {
-    hideLoader(); // Приховує індикатор завантаження при помилці
+    hideLoader();
     showError("Something went wrong. Please try again later!");
   }
 });
 
-
-loadMoreBtn.addEventListener("click", async () => {
-  currentPage += 1;
-
+loadMoreButton.addEventListener("click", async () => {
+  currentPage++;
   showLoader();
 
   try {
-    const data = await fetchImages(currentQuery, currentPage, 15);
-
+    const data = await fetchImages(currentPage, currentQuery);
     hideLoader();
 
     renderGallery(data.hits);
 
     if (currentPage * 15 >= totalHits) {
-      showEndOfResultsMessage();
-      loadMoreBtn.style.display = "none";
+      hideLoaderMoreButton();
+      showWarning("We're sorry, but you've reached the end of search results.")
     }
 
-    const { height: cardHeight } = document
-      .querySelector(".gallery")
-      .firstElementChild.getBoundingClientRect();
-
-    window.scrollBy({
-      top: cardHeight * 2,
-      behavior: "smooth",
-    });
+    scrollPage();
   } catch (error) {
     hideLoader();
     showError("Something went wrong. Please try again later!");
   }
 });
+
+function showLoaderMoreButton() {
+  loadMoreButton.computedStyleMap.display = "block";
+}
+
+function hideLoaderMoreButton() {
+    loadMoreButton.computedStyleMap.display = "none";
+  }
+
+  function scrollPage() {
+    const { height: cardHeight } = document.querySelector(".gallery").firstElementChild.getBoundingClientRect();
+    window.scrollBy({
+      top: cardHeight * 2,
+      behaior: "smooth",
+    });
+}

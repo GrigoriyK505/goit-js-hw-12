@@ -13,6 +13,14 @@ loader.style.display = "none";
 loader.innerHTML = '<div class="css-loader"></div>';
 document.body.appendChild(loader);
 
+const form = document.createElement("form");
+form.id = "search-form";
+form.innerHTML = `
+  <input type="text" id="search-input" placeholder="Search images...">
+  <button type="submit">Search</button>
+`;
+document.body.prepend(form);
+
 const lightbox = new SimpleLightbox(".gallery a");
 
 export function clearGallery() {
@@ -27,6 +35,25 @@ export function hideLoader() {
   loader.style.display = "none";
 }
 
+export function showLoadingToast() {
+  iziToast.info({
+    id: "loading-toast",
+    title: "Loading",
+    message: "Fetching images, please wait...",
+    timeout: false, // Сповіщення не зникає автоматично
+    close: false, // Забороняємо користувачу вручну закривати сповіщення
+    position: "topRight",
+  });
+}
+
+export function hideLoadingToast() {
+  iziToast.hide({}, document.querySelector(".iziToast#loading-toast"));
+}
+
+
+/**
+ * @param {Array} images
+ */
 export function renderGallery(images) {
   const markup = images
     .map(
@@ -48,6 +75,9 @@ export function renderGallery(images) {
   lightbox.refresh();
 }
 
+/**
+ * @param {string} message
+ */
 export function showError(message) {
   iziToast.error({
     title: "Error",
@@ -55,16 +85,12 @@ export function showError(message) {
   });
 }
 
+/**
+ * @param {string} message
+ */
 export function showWarning(message) {
   iziToast.warning({
     title: "No Results",
     message: message,
-  });
-}
-
-export function showEndOfResultsMessage() {
-  iziToast.info({
-    title: "End of Results",
-    message: "We're sorry, but you've reached the end of search results.",
   });
 }
