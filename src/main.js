@@ -92,3 +92,18 @@ function hideLoaderMoreButton() {
       behaior: "smooth",
     });
 }
+
+export function showLoadingToast() {
+  iziToast.info({
+    id: "loading-toast",
+    title: "Loading",
+    message: "Fetching images, please wait...",
+    timeout: false,
+    close: false,
+    position: "topRight",
+  });
+}
+
+export function hideLoadingToast() {
+  iziToast.hide({}, document.querySelector(".iziToast#loading-toast"));
+}
