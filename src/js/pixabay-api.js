@@ -28,4 +28,3 @@ export async function fetchImages(currentPage, query) {
     throw error;
   }
 }
-console.log("Request URL:", url);
