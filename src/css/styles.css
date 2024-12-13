@@ -71,13 +71,12 @@ button:hover {
 
 .gallery {
   display: flex;
-  gap: 24px;
   flex-wrap: wrap;
+  gap: 24px;
   justify-content: center;
   align-items: center;
-  flex-direction: row;
   margin-top: 32px;
-  margin-bottom: 36px;
+  margin-bottom: 16px;
 }
 
 img {
@@ -164,22 +163,23 @@ img {
 
 .load-more {
   display: none;
+  margin: 0 auto;
   padding: 10px 20px;
-  margin: 20px auto;
   background-color: #3498db;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-}
-
-.loader {
   text-align: center;
-  font-size: 18px;
-  color: #999;
+  width: fit-content;
 }
 
 .load-more:hover {
   background-color: #2874a6;
+}
+
+.gallery+.load-more {
+  margin-top: 24px;
+  margin-bottom: 40px;
 }

@@ -45,6 +45,7 @@ form.addEventListener("submit", async (e) => {
     }
 
     renderGallery(data.hits);
+
     if (data.hits.length < totalHits) {
       showLoaderMoreButton();
     }
@@ -65,7 +66,7 @@ loadMoreButton.addEventListener("click", async () => {
 
     renderGallery(data.hits);
 
-    if (currentPage * 15 >= totalHits) {
+    if (currentPage * 40 >= totalHits) {
       hideLoaderMoreButton();
       showWarning("We're sorry, but you've reached the end of search results.")
     }
@@ -78,12 +79,12 @@ loadMoreButton.addEventListener("click", async () => {
 });
 
 function showLoaderMoreButton() {
-  loadMoreButton.computedStyleMap.display = "block";
+  loadMoreButton.style.display = "block";
 }
 
 function hideLoaderMoreButton() {
-    loadMoreButton.computedStyleMap.display = "none";
-  }
+  loadMoreButton.style.display = "none";
+}
 
   function scrollPage() {
     const { height: cardHeight } = document.querySelector(".gallery").firstElementChild.getBoundingClientRect();
