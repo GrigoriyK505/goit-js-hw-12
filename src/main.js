@@ -38,22 +38,23 @@ form.addEventListener("submit", async (e) => {
   clearGallery();
   currentPage = 1;
   loadMoreButton.style.display = "none";
-  showLoader();
 
   try {
     const data = await fetchImages(query, currentPage, perPage);
-    hideLoader();
+
     if (!data.hits.length) {
       showWarning("Sorry, there are no images matching your search query. Please try again!");
       return;
     }
 
     renderGallery(data.hits);
-    if (data.hits.length === perPage) {
+
+    if (data.totalHits > perPage) {
       loadMoreButton.style.display = "block";
+    } else {
+      displayEndMessage();
     }
   } catch (error) {
-    hideLoader();
     showError("Something went wrong. Please try again later!");
   }
 });
@@ -61,16 +62,38 @@ form.addEventListener("submit", async (e) => {
 loadMoreButton.addEventListener("click", async () => {
   currentPage += 1;
   showLoader();
+
   try {
     const data = await fetchImages(query, currentPage, perPage);
     hideLoader();
+
     renderGallery(data.hits);
 
-    if (data.hits.length < perPage) {
+    scrollPage();
+
+    const totalLoaded = currentPage * perPage;
+    if (totalLoaded >= data.totalHits) {
       loadMoreButton.style.display = "none";
+      displayEndMessage();
     }
   } catch (error) {
-    hideLoader();
-    showError("Something went wrong. Please try again later!");
+    iziToast.info({
+      message: "We're sorry, but you've reached the end of search results.",
+      position: "topRight",
+      timeout: 5000,
+    close: true,
+    progressBar: true,
+    });
   }
 });
+
+function scrollPage() {
+  const galleryItems = document.querySelectorAll(".gallery a");
+  if (galleryItems.length > 0) {
+    const cardHeight = galleryItems[0].getBoundingClientRect().height; // Висота однієї картки
+    window.scrollBy({
+      top: cardHeight * 2, // Прокрутка на дві висоти картки
+      behavior: "smooth",  // Плавна анімація
+    });
+  }
+}
